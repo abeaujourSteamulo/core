@@ -13,3 +13,4 @@
 /tests/Fixtures/app/public/bundles/
 /vendor/
 /Dockerfile
+.idea
