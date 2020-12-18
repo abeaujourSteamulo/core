@@ -218,12 +218,12 @@ final class SchemaFactory implements SchemaFactoryInterface
 
         $prefix = $resourceMetadata ? $resourceMetadata->getShortName() : (new \ReflectionClass($className))->getShortName();
         if (null !== $inputOrOutputClass && $className !== $inputOrOutputClass) {
-            $prefix .= ':'.md5($inputOrOutputClass);
+            $prefix .= '.'.md5($inputOrOutputClass);
         }
 
         if (isset($this->distinctFormats[$format])) {
             // JSON is the default, and so isn't included in the definition name
-            $prefix .= ':'.$format;
+            $prefix .= '.'.$format;
         }
 
         if (isset($serializerContext[DocumentationNormalizer::SWAGGER_DEFINITION_NAME])) {
@@ -233,7 +233,12 @@ final class SchemaFactory implements SchemaFactoryInterface
             $name = $groups ? sprintf('%s-%s', $prefix, implode('_', $groups)) : $prefix;
         }
 
-        return $name;
+        return $this->encodeDefinitionName($name);
+    }
+
+    private function encodeDefinitionName(string $name): string
+    {
+        return preg_replace('/[^a-zA-Z0-9.\-_]/', '.', $name);
     }
 
     private function getMetadata(string $className, string $type = Schema::TYPE_OUTPUT, ?string $operationType = null, ?string $operationName = null, ?array $serializerContext = null): ?array
